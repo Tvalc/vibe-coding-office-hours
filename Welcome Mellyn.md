@@ -44,7 +44,31 @@ PowerShell is a powerful terminal for Windows, great for running commands and sc
 
 ---
 
-## 4. Connecting Windsurf with Git
+## 4. Using Extensions in Windsurf
+
+Windsurf now supports extensions, just like VS Code! Extensions can add new features, language support, and tools to make coding even easier.
+
+**Why Use Extensions?**
+- Get advanced features for Python, PowerShell, and other languages (linting, debugging, syntax highlighting, etc.)
+- Add tools for formatting, testing, and productivity
+
+**How to Install Extensions:**
+1. Click on the **Extensions** option in the File menu or sidebar (it looks like a square icon or may say "Extensions").
+2. Use the search bar to find the extension you want (e.g., "Python", "PowerShell").
+3. Click **Install** on the extension you want to add.
+4. Follow any prompts to finish setup.
+
+**Popular Extensions to Consider:**
+- **Python** (for Python language support, linting, debugging, and Jupyter notebooks)
+- **PowerShell** (for scripting, syntax highlighting, and more)
+- **Prettier** or **ESLint** (for code formatting/linting)
+
+**Pro Tip:**
+If you don’t see the Extensions option, make sure you’re using the latest version of Windsurf. Features may be updated or added over time.
+
+---
+
+## 5. Connecting Windsurf with Git
 
 **Why Git?**  
 Git helps you track changes, collaborate, and never lose your work.
