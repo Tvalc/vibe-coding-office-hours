@@ -58,13 +58,13 @@ Git helps you track changes, collaborate, and never lose your work.
 
 ## 5. Using Git to Store and Track Changes
 
-**Basic Git Commands:**
+**Basic Git Commands (Terminal):**
 - `git status` – See what’s changed.
 - `git add .` – Stage all changes.
 - `git commit -m "Your message"` – Save your changes.
 - `git push` – Upload changes to the remote repo.
 
-**Steps:**
+**Steps (Terminal):**
 1. Open a terminal in your project folder.
 2. Run:
    ```
@@ -75,6 +75,23 @@ Git helps you track changes, collaborate, and never lose your work.
    git push -u origin main
    ```
 3. Now your code is backed up and shareable!
+
+---
+
+## 6. Committing Changes from Windsurf (No Terminal Needed!)
+
+You don’t have to use the terminal every time you want to save your work! Windsurf (and VS Code) has a built-in Source Control panel that makes committing changes easy:
+
+**Steps:**
+1. Click the Source Control icon (the branch icon) on the sidebar.
+2. You’ll see a list of changed files. Review them by clicking each file.
+3. Type a commit message in the box at the top (e.g., `Add new feature` or `Fix bug`).
+4. Click the checkmark (✓) or the **Commit** button to save your changes.
+5. To upload your changes to GitHub or GitLab, click the “sync” icon or run `git push` from the panel.
+
+**When to Use the Terminal:**
+- For advanced Git commands (like branching, merging, or fixing conflicts), you might still need the terminal.
+- For everyday work, the Source Control panel is all you need!
 
 ---
 
