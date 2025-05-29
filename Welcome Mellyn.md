@@ -63,12 +63,34 @@ Windsurf now supports extensions, just like VS Code! Extensions can add new feat
 - **PowerShell** (for scripting, syntax highlighting, and more)
 - **Prettier** or **ESLint** (for code formatting/linting)
 
-**Pro Tip:**
-If you don’t see the Extensions option, make sure you’re using the latest version of Windsurf. Features may be updated or added over time.
+            ### How to Set Up Prettier, Python, and PowerShell Extensions in Windsurf
 
----
+            **1. Prettier (Code Formatter):**
+            - Open the Extensions panel.
+            - Search for "Prettier" and click **Install**.
+            - To use: Right-click your code and select **Format Document**, or use `Shift+Alt+F`. For auto-formatting, enable **Format On Save** in settings.
+            - To verify: Make a messy change, save the file, and check if it auto-formats.
 
-## 5. Connecting Windsurf with Git
+            **2. Python:**
+            - In Extensions, search for "Python" and install the one by Microsoft.
+            - To use: Open a `.py` file for syntax highlighting, linting, and code completion. You may be prompted to install additional tools (like pylint or Jupyter support).
+            - To verify: Open a Python file and check for syntax highlighting and linting squiggles.
+
+            **3. PowerShell:**
+            - In Extensions, search for "PowerShell" and install it.
+            - To use: Open a `.ps1` file for syntax highlighting and script support. You’ll get features like IntelliSense and script execution.
+            - To verify: Open a PowerShell script and check for color-coded syntax and suggestions.
+
+            **Pro Tips:**
+            - For Prettier, you can add a `.prettierrc` file to customize formatting.
+            - For Python, select your interpreter from the Command Palette if you have multiple Python installs.
+            - For PowerShell, you can set it as your default terminal shell in Windsurf/VS Code settings.
+
+            **If you don’t see the Extensions option, make sure you’re using the latest version of Windsurf. Features may be updated or added over time.**
+
+            ---
+
+## 6. Connecting Windsurf with Git
 
 **Why Git?**  
 Git helps you track changes, collaborate, and never lose your work.
@@ -80,7 +102,7 @@ Git helps you track changes, collaborate, and never lose your work.
 
 ---
 
-## 5. Using Git to Store and Track Changes
+## 7. Using Git to Store and Track Changes (only read this if you care to learn how to use git updates manually, otherwise skip to the next section)
 
 **Basic Git Commands (Terminal):**
 - `git status` – See what’s changed.
@@ -102,7 +124,7 @@ Git helps you track changes, collaborate, and never lose your work.
 
 ---
 
-## 6. Committing Changes from Windsurf (No Terminal Needed!)
+## 8. Committing Changes from Windsurf (No Terminal Needed!)
 
 You don’t have to use the terminal every time you want to save your work! Windsurf (and VS Code) has a built-in Source Control panel that makes committing changes easy:
 
@@ -120,7 +142,7 @@ You don’t have to use the terminal every time you want to save your work! Wind
 ---
 
 
-## 6. Why Creating a Project Directory Matters (A Real-World Example)
+## 9. Why Creating a Project Directory Matters (A Real-World Example)
 
 Sometimes, the simplest step is the most important: making sure you have a dedicated folder (directory) for your project! Here’s a real story from this very guide:
 
@@ -139,7 +161,7 @@ If you ever get a “cannot find the path specified” error, double-check that 
 
 ---
 
-## 9. Working With Multiple Projects at Once (VS Code & Windsurf Workspaces)
+##  10. Working With Multiple Projects at Once (VS Code & Windsurf Workspaces)
 
 If you want to work on several projects at the same time—like you saw in your earlier screenshot—you’ll want to use a workspace instead of just opening a folder. Here’s how:
 
@@ -162,8 +184,7 @@ If you accidentally close your workspace by opening a folder directly, just reop
 
 ---
 
-## 10. Quick Tips
-
+## 11. Quick Tips
 - Don’t be afraid to ask questions—everyone starts somewhere!
 - Share your screen and pair up for fun and learning.
 - Celebrate small wins and cool bugs.
