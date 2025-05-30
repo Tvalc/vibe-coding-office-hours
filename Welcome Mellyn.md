@@ -4,7 +4,33 @@ Welcome! This guide will help you and your friends get set up fast so you can fo
 
 ---
 
-## 1. Setting Up Windsurf
+## 1. Creating a GitHub Account & Installing GitHub Desktop
+
+**Why GitHub?**  
+GitHub is the world’s most popular place to store code, collaborate, and share your projects. You’ll need a free account to save your code online and use tools like GitHub Desktop.
+
+**Steps:**
+1. Go to [github.com](https://github.com) and click **Sign Up**.
+2. Follow the prompts to create your free account (use a real email address).
+3. Verify your email address by clicking the link GitHub sends you.
+
+**Installing GitHub Desktop:**
+1. Go to [desktop.github.com](https://desktop.github.com) and click **Download for Windows** (or Mac).
+2. Open the downloaded file and follow the installation instructions.
+3. Launch GitHub Desktop and sign in with your GitHub account.
+
+**First-Time Setup:**
+1. Click **File > Clone Repository** to copy an existing repo, or **File > New Repository** to start a new one.
+2. Choose a folder on your computer for your code.
+3. Use the app’s interface to make changes, commit, and push to GitHub—no terminal required!
+
+**Pro Tips:**
+- You can use GitHub Desktop alongside Windsurf, VS Code, or any editor.
+- If you ever get stuck, check the [GitHub Desktop documentation](https://docs.github.com/en/desktop) for help.
+
+---
+
+## 2. Setting Up Windsurf
 
 **What is Windsurf?**  
 Windsurf is a collaborative coding platform that makes it easy to build, deploy, and share web projects.
@@ -90,7 +116,33 @@ Windsurf now supports extensions, just like VS Code! Extensions can add new feat
 
             ---
 
-## 6. Connecting Windsurf with Git
+## 6. Creating a GitHub Account & Installing GitHub Desktop
+
+**Why GitHub?**  
+GitHub is the world’s most popular place to store code, collaborate, and share your projects. You’ll need a free account to save your code online and use tools like GitHub Desktop.
+
+**Steps:**
+1. Go to [github.com](https://github.com) and click **Sign Up**.
+2. Follow the prompts to create your free account (use a real email address).
+3. Verify your email address by clicking the link GitHub sends you.
+
+**Installing GitHub Desktop:**
+1. Go to [desktop.github.com](https://desktop.github.com) and click **Download for Windows** (or Mac).
+2. Open the downloaded file and follow the installation instructions.
+3. Launch GitHub Desktop and sign in with your GitHub account.
+
+**First-Time Setup:**
+1. Click **File > Clone Repository** to copy an existing repo, or **File > New Repository** to start a new one.
+2. Choose a folder on your computer for your code.
+3. Use the app’s interface to make changes, commit, and push to GitHub—no terminal required!
+
+**Pro Tips:**
+- You can use GitHub Desktop alongside Windsurf, VS Code, or any editor.
+- If you ever get stuck, check the [GitHub Desktop documentation](https://docs.github.com/en/desktop) for help.
+
+---
+
+## 7. Connecting Windsurf with Git
 
 **Why Git?**  
 Git helps you track changes, collaborate, and never lose your work.
