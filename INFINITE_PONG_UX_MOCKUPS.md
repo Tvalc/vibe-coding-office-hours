@@ -25,7 +25,7 @@ This document provides text-based mockups for each major screen and overlay in t
 +-------------------------------------------------+
 | Level: 7              Score: 3   High: 123      |
 |                                                 |
-|        ---                                     |
+|        ---                                      |
 |      AI Paddle (top)                            |
 |                                                 |
 |      #   *   [O]   #                            |
