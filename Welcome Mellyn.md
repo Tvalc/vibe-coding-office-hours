@@ -146,17 +146,6 @@ Windsurf now supports extensions, just like VS Code! Extensions can add new feat
 
             ---
 
-## 7. Connecting Windsurf with Git
-
-**Why Git?**  
-Git helps you track changes, collaborate, and never lose your work.
-
-**Steps:**
-1. In Windsurf, open or create a project.
-2. Go to “Settings” > “Version Control” and connect your GitHub/GitLab account.
-3. Authorize Windsurf to access your repositories.
-
----
 
 ## 7. Using Git to Store and Track Changes (only read this if you care to learn how to use git updates manually, otherwise skip to the next section)
 
