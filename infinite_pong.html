@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infinite Pong: The Quest</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #222;
+      color: #fafafa;
+      font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    #game-root {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      background: #181818;
+      border: 4px solid #444;
+      border-radius: 12px;
+      display: block;
+      margin: 0 auto;
+      box-shadow: 0 8px 32px #000a;
+    }
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(20,20,30,0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 10;
+      color: #fff;
+    }
+    .button {
+      background: #00c896;
+      color: #fff;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 6px;
+      padding: 14px 32px;
+      margin: 10px;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0006;
+      transition: background 0.2s;
+    }
+    .button:hover { background: #009e75; }
+    .small-btn { font-size: 0.9em; padding: 8px 18px; }
+    .caption { margin-top: 18px; font-size: 1.2em; color: #b8ffe3; }
+    .high-score { color: #ffe97a; font-size: 1.1em; margin-top: 8px; }
+    @media (max-width: 700px) {
+      canvas { width: 98vw !important; height: 60vw !important; }
+      .overlay { font-size: 0.85em; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="game-root">
+    <canvas id="pong-canvas" width="800" height="600"></canvas>
+    <!-- Overlays will be dynamically injected here -->
+  </div>
+  <script>
+    // --- Game Constants ---
+    const GAME_WIDTH = 800, GAME_HEIGHT = 600;
+    const PADDLE_WIDTH = 110, PADDLE_HEIGHT = 18;
+    const BALL_RADIUS = 12;
+    const OBSTACLE_SIZE = 38;
+    const POWERUP_SIZE = 30;
+    const PLAYER_Y = GAME_HEIGHT - 40;
+    const AI_Y = 40;
+    const COLORS = {
+      bg: '#181818', fg: '#fafafa', accent: '#00c896', ai: '#ff6e6e', player: '#6ecfff', obstacle: '#ffe97a', powerup: '#b8ffe3', ball: '#fff', shadow: '#0008'
+    };
+    const FPS = 60;
+    const LEVEL_SCORE = 10;
+    // --- Game State ---
+    let state = {
+      screen: 'start', // start, playing, paused, cutscene, gameover, howto, credits
+      score: 0,
+      highScore: Number(localStorage.getItem('pongHighScore') || 0),
+      level: 1,
+      player: { x: GAME_WIDTH/2 - PADDLE_WIDTH/2, y: PLAYER_Y, w: PADDLE_WIDTH, h: PADDLE_HEIGHT, speed: 9 },
+      ai: { x: GAME_WIDTH/2 - PADDLE_WIDTH/2, y: AI_Y, w: PADDLE_WIDTH, h: PADDLE_HEIGHT, speed: 7 },
+      ball: { x: GAME_WIDTH/2, y: GAME_HEIGHT/2, vx: 7, vy: 6, r: BALL_RADIUS },
+      obstacles: [],
+      powerups: [],
+      powerupActive: null,
+      powerupTimer: 0,
+      playerMove: 0, // -1 left, 1 right
+      aiMove: 0,
+      paused: false,
+      cutsceneIndex: 0,
+      cutsceneStep: 0,
+      cutscene: null,
+      howto: false,
+      credits: false,
+      message: '',
+      lastTouch: 0,
+      mobile: /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
+    };
+    // --- Canvas Setup ---
+    const canvas = document.getElementById('pong-canvas');
+    const ctx = canvas.getContext('2d');
+    // --- Utility Functions ---
+    function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+    function randInt(a, b) { return Math.floor(Math.random() * (b-a+1)) + a; }
+    function chance(p) { return Math.random() < p; }
+    // --- Overlay Rendering ---
+    function showOverlay(html) {
+      let overlay = document.createElement('div');
+      overlay.className = 'overlay';
+      overlay.innerHTML = html;
+      overlay.id = 'game-overlay';
+      document.body.appendChild(overlay);
+    }
+    function hideOverlay() {
+      let overlay = document.getElementById('game-overlay');
+      if (overlay) overlay.remove();
+    }
+    // --- Main Screens ---
+    function renderStart() {
+      showOverlay(`
+        <div style='text-align:center;'>
+          <h1>INFINITE PONG: THE QUEST</h1>
+          <button class='button' onclick='startGame()'>▶️ START GAME</button>
+          <div class='high-score'>High Score: ${state.highScore}</div>
+          <div style='margin-top:22px;'>
+            <button class='button small-btn' onclick='showHowTo()'>How to Play</button>
+            <button class='button small-btn' onclick='showCredits()'>Credits</button>
+          </div>
+        </div>
+      `);
+    }
+    function renderPause() {
+      showOverlay(`
+        <div style='text-align:center;'>
+          <h2>GAME PAUSED</h2>
+          <button class='button' onclick='resumeGame()'>▶️ Resume</button><br/>
+          <button class='button' onclick='restartLevel()'>Restart Level</button><br/>
+          <button class='button' onclick='backToMenu()'>Main Menu</button>
+        </div>
+      `);
+    }
+    function renderGameOver() {
+      showOverlay(`
+        <div style='text-align:center;'>
+          <h2>GAME OVER</h2>
+          <div class='caption'>Score: ${state.score} &nbsp; High Score: ${state.highScore}</div>
+          <button class='button' onclick='restartGame()'>Restart</button>
+          <button class='button' onclick='backToMenu()'>Main Menu</button>
+        </div>
+      `);
+    }
+    function renderHowTo() {
+      showOverlay(`
+        <div style='text-align:center;max-width:420px;'>
+          <h2>HOW TO PLAY</h2>
+          <ul style='text-align:left;font-size:1em;'>
+            <li>Move paddle: <b>Arrow Keys</b> or <b>A/D</b> (PC)</li>
+            <li>Pause: <b>P</b> or <b>Esc</b> (PC), tap center (mobile)</li>
+            <li>Mobile: Tap left/right side to move paddle</li>
+            <li>Defeat the AI to advance</li>
+            <li>Each level adds new twists!</li>
+            <li>Collect powerups, dodge obstacles</li>
+          </ul>
+          <button class='button' onclick='hideOverlay(); state.howto=false;'>Close</button>
+        </div>
+      `);
+    }
+    function renderCredits() {
+      showOverlay(`
+        <div style='text-align:center;max-width:420px;'>
+          <h2>CREDITS</h2>
+          <div>Code: You &amp; Cascade</div>
+          <div>Art: [Your Name]</div>
+          <div>Music: [Your Name or Source]</div>
+          <button class='button' onclick='hideOverlay(); state.credits=false;'>Close</button>
+        </div>
+      `);
+    }
+    // --- Game Loop and Drawing (Stub for now) ---
+    function gameLoop() {
+      ctx.clearRect(0,0,GAME_WIDTH,GAME_HEIGHT);
+      // TODO: Draw paddles, ball, obstacles, powerups, score, etc.
+      // For now, just show the field outline
+      ctx.strokeStyle = COLORS.accent;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(0,0,GAME_WIDTH,GAME_HEIGHT);
+      // ...
+      // TODO: Implement full gameplay logic
+    }
+    // --- Game State Transitions ---
+    function startGame() {
+      hideOverlay();
+      state.screen = 'playing';
+      state.score = 0;
+      state.level = 1;
+      // TODO: Reset positions, obstacles, powerups, etc.
+      requestAnimationFrame(mainLoop);
+    }
+    function resumeGame() {
+      hideOverlay();
+      state.screen = 'playing';
+      requestAnimationFrame(mainLoop);
+    }
+    function restartLevel() {
+      hideOverlay();
+      // TODO: Re-initialize level
+      state.screen = 'playing';
+      requestAnimationFrame(mainLoop);
+    }
+    function restartGame() {
+      hideOverlay();
+      state.screen = 'playing';
+      state.score = 0;
+      state.level = 1;
+      // TODO: Reset positions, obstacles, powerups, etc.
+      requestAnimationFrame(mainLoop);
+    }
+    function backToMenu() {
+      hideOverlay();
+      state.screen = 'start';
+      renderStart();
+    }
+    function showHowTo() {
+      state.howto = true;
+      renderHowTo();
+    }
+    function showCredits() {
+      state.credits = true;
+      renderCredits();
+    }
+    // --- Main Loop Handler ---
+    function mainLoop() {
+      if (state.screen === 'playing') {
+        gameLoop();
+        setTimeout(()=>requestAnimationFrame(mainLoop),1000/FPS);
+      }
+    }
+    // --- Input Handling ---
+    document.addEventListener('keydown', e => {
+      if (state.screen === 'playing') {
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') state.playerMove = -1;
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') state.playerMove = 1;
+        if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
+          state.screen = 'paused';
+          renderPause();
+        }
+      }
+    });
+    document.addEventListener('keyup', e => {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A' || e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        state.playerMove = 0;
+      }
+    });
+    // Mobile tap controls
+    canvas.addEventListener('touchstart', function(e) {
+      if (state.screen === 'playing') {
+        let rect = canvas.getBoundingClientRect();
+        let x = e.touches[0].clientX - rect.left;
+        let y = e.touches[0].clientY - rect.top;
+        if (y > GAME_HEIGHT * 0.33 && y < GAME_HEIGHT * 0.67) {
+          // Middle third: pause
+          state.screen = 'paused';
+          renderPause();
+        } else if (x < GAME_WIDTH/2) {
+          state.playerMove = -1;
+        } else {
+          state.playerMove = 1;
+        }
+      }
+    });
+    canvas.addEventListener('touchend', function(e) {
+      state.playerMove = 0;
+    });
+    // --- Initial Render ---
+    renderStart();
+  </script>
+</body>
+</html>
