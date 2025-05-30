@@ -30,7 +30,19 @@ GitHub is the world’s most popular place to store code, collaborate, and share
 
 ---
 
-## 2. Setting Up Windsurf
+## 2. Connecting Windsurf with Git
+
+**Why Git?**  
+Git helps you track changes, collaborate, and never lose your work.
+
+**Steps:**
+1. In Windsurf, open or create a project.
+2. Go to “Settings” > “Version Control” and connect your GitHub/GitLab account.
+3. Authorize Windsurf to access your repositories.
+
+---
+
+## 3. Setting Up Windsurf
 
 **What is Windsurf?**  
 Windsurf is a collaborative coding platform that makes it easy to build, deploy, and share web projects.
@@ -43,7 +55,7 @@ Windsurf is a collaborative coding platform that makes it easy to build, deploy,
 
 ---
 
-## 2. Setting Up Python
+## 4. Setting Up Python
 
 **Why Python?**  
 Python is a beginner-friendly language that’s great for quick projects, automation, and web apps.
