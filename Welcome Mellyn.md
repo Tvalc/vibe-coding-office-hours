@@ -30,19 +30,37 @@ GitHub is the world’s most popular place to store code, collaborate, and share
 
 ---
 
-## 2. Connecting Windsurf with Git
+## 2. Setting Up Windsurf
+
+**What is Windsurf?**  
+Windsurf is a collaborative coding platform that makes it easy to build, deploy, and share web projects.
+
+**Steps:**
+1. Go to [Windsurf](https://windsurf.ai) and sign up for an account.
+2. Download and install the Windsurf desktop app (Windows/Mac/Linux).
+3. Open the app and log in with your account.
+4. (Optional) Connect your GitHub or GitLab account for easier project management (see next section).
+
+---
+
+## 3. Connecting Windsurf with Git
 
 **Why Git?**  
 Git helps you track changes, collaborate, and never lose your work.
 
-**Steps:**
-1. In Windsurf, open or create a project.
-2. Go to “Settings” > “Version Control” and connect your GitHub/GitLab account.
-3. Authorize Windsurf to access your repositories.
+**Easiest Way:**
+1. In Windsurf, look for the **Git** (or Source Control) icon/button in the upper left corner of the app window.
+2. Click it—Windsurf will prompt you to connect your GitHub or GitLab account.
+3. Follow the prompts to log in and authorize Windsurf to access your repositories.
+
+**Alternate Method:**
+- You can also go to “Settings” > “Version Control” to connect your account manually.
+
+Once connected, you’ll be able to commit, push, and pull changes directly from Windsurf’s interface—no terminal needed!
 
 ---
 
-## 3. Setting Up Windsurf
+## 4. Setting Up Python
 
 **What is Windsurf?**  
 Windsurf is a collaborative coding platform that makes it easy to build, deploy, and share web projects.
