@@ -186,8 +186,49 @@ You don’t have to use the terminal every time you want to save your work! Wind
 
 ---
 
+## 9. Troubleshooting: Git 'user.name' and 'user.email' Missing Error
 
-## 9. Why Creating a Project Directory Matters (A Real-World Example)
+If you see an error like:
+
+```
+*** Please tell me who you are.
+
+fatal: unable to auto-detect email address (got '...')
+```
+
+It means Git doesn’t know who you are—every commit must have a name and email.
+
+**How to Fix:**
+
+### Option 1: Set Your Name and Email Globally (Recommended)
+Open a terminal (Command Prompt, PowerShell, or Windsurf/VS Code terminal) and run:
+
+```sh
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+```
+Replace with your real name and email (the same one you used for GitHub is best).
+
+### Option 2: Set for Just This Project
+If you only want to set it for the current folder, run:
+
+```sh
+git config user.name "Your Name"
+git config user.email "your@email.com"
+```
+
+### After Setting
+Try your commit again—it should work now!
+
+**Pro Tip:**
+See your current settings with:
+```sh
+git config --global --list
+```
+
+---
+
+## 10. Why Creating a Project Directory Matters (A Real-World Example)
 
 Sometimes, the simplest step is the most important: making sure you have a dedicated folder (directory) for your project! Here’s a real story from this very guide:
 
