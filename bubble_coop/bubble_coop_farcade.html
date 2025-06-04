@@ -91,7 +91,7 @@
         assets: {},
         entities: [],
         keys: {},
-        gravity: 0.5,
+        gravity: 3.0,
         loading: true,
         loadingProgress: 0,
 
@@ -164,8 +164,20 @@
             this.player = new Player(100, 300);
             this.entities.push(this.player);
             
-            // Add a simple platform to stand on
-            this.entities.push(new Platform(0, 500, 800, 20));
+            // Add multiple platforms to create a level
+            // Main floor
+            this.entities.push(new Platform(0, 550, 800, 20));
+            
+            // Platforms at different heights
+            this.entities.push(new Platform(100, 450, 200, 15));
+            this.entities.push(new Platform(400, 400, 200, 15));
+            this.entities.push(new Platform(200, 320, 150, 15));
+            this.entities.push(new Platform(500, 250, 150, 15));
+            this.entities.push(new Platform(50, 200, 150, 15));
+            
+            // Small challenge platforms
+            this.entities.push(new Platform(350, 180, 60, 10));
+            this.entities.push(new Platform(650, 150, 60, 10));
         },
 
         run: function(timestamp = 0) {
@@ -193,20 +205,54 @@
         },
 
         checkCollisions: function() {
-            // Simple collision detection between player and platforms
+            // Improved collision detection between player and platforms
             for (let i = 0; i < this.entities.length; i++) {
                 const entity = this.entities[i];
                 
                 if (entity instanceof Platform) {
-                    if (this.player.x + this.player.width > entity.x &&
-                        this.player.x < entity.x + entity.width &&
-                        this.player.y + this.player.height > entity.y &&
-                        this.player.prevY + this.player.height <= entity.y) {
+                    // Check horizontal overlap first
+                    const horizontalOverlap = 
+                        this.player.x + this.player.width > entity.x && 
+                        this.player.x < entity.x + entity.width;
                         
-                        // Player landing on platform
-                        this.player.y = entity.y - this.player.height;
-                        this.player.velocityY = 0;
-                        this.player.grounded = true;
+                    if (horizontalOverlap) {
+                        // TOP collision - player landing on platform
+                        if (this.player.y + this.player.height > entity.y && 
+                            this.player.prevY + this.player.height <= entity.y + 5) { // Add small tolerance
+                            
+                            this.player.y = entity.y - this.player.height;
+                            this.player.velocityY = 0;
+                            this.player.grounded = true;
+                            continue;
+                        }
+                        
+                        // BOTTOM collision - player hitting platform from below
+                        if (this.player.y < entity.y + entity.height && 
+                            this.player.prevY >= entity.y + entity.height - 5) { // Add small tolerance
+                            
+                            this.player.y = entity.y + entity.height;
+                            this.player.velocityY = 0;
+                            continue;
+                        }
+                        
+                        // Side collisions only if not landing on top or hitting from below
+                        if (!this.player.grounded) {
+                            // RIGHT side collision
+                            if (this.player.prevX + this.player.width <= entity.x + 5 &&
+                                this.player.x + this.player.width > entity.x) {
+                                
+                                this.player.x = entity.x - this.player.width;
+                                this.player.velocityX = 0;
+                            }
+                            
+                            // LEFT side collision
+                            if (this.player.prevX >= entity.x + entity.width - 5 &&
+                                this.player.x < entity.x + entity.width) {
+                                
+                                this.player.x = entity.x + entity.width;
+                                this.player.velocityX = 0;
+                            }
+                        }
                     }
                 }
             }
@@ -234,7 +280,7 @@
             this.velocityX = 0;
             this.velocityY = 0;
             this.speed = 200;
-            this.jumpForce = 400;
+            this.jumpForce = 160;
             this.grounded = false;
             this.color = '#4fc3f7';
             this.jumpsLeft = 2; // For double jump
@@ -269,8 +315,12 @@
                 this.jumpKeyWasPressed = false;
             }
             
-            // Apply gravity
+            // Apply gravity with a max fall speed
             this.velocityY += BubbleCoop.gravity * 60 * deltaTime;
+            // Limit maximum fall speed
+            if (this.velocityY > 300) {
+                this.velocityY = 300;
+            }
             
             // Update position
             this.x += this.velocityX * deltaTime;
@@ -279,6 +329,15 @@
             // Keep player in bounds
             if (this.x < 0) this.x = 0;
             if (this.x + this.width > BubbleCoop.width) this.x = BubbleCoop.width - this.width;
+            if (this.y < 0) {
+                this.y = 0;
+                this.velocityY = 0; // Stop upward momentum if hitting top
+            }
+            if (this.y + this.height > BubbleCoop.height) {
+                this.y = BubbleCoop.height - this.height;
+                this.velocityY = 0;
+                this.grounded = true;
+            }
             
             // Reset jumps when grounded
             if (this.grounded) {
