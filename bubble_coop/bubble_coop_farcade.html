@@ -285,11 +285,13 @@
             this.color = '#4fc3f7';
             this.jumpsLeft = 2; // For double jump
             this.facingRight = true;
+            this.prevX = x;
             this.prevY = y;
         }
         
         update(deltaTime) {
             // Store previous position for collision detection
+            this.prevX = this.x;
             this.prevY = this.y;
             
             // Movement controls
