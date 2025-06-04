@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Coop Animation Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Bubble Coop Animation Generator</h1>
+        
+        <div class="animation-selector">
+            <h2>Select Animation</h2>
+            <select id="animationSelect">
+                <option value="">-- Select an animation --</option>
+                <optgroup label="Character Animations (Coop)">
+                    <option value="idle_stance" data-frames="4">Idle stance (4 frames)</option>
+                    <option value="walking_cycle" data-frames="6">Walking cycle (6 frames)</option>
+                    <option value="running_cycle" data-frames="8">Running cycle (8 frames)</option>
+                    <option value="basic_jump" data-frames="5">Basic jump (5 frames)</option>
+                    <option value="double_jump" data-frames="7">Double jump (7 frames)</option>
+                    <option value="landing" data-frames="3">Landing (3 frames)</option>
+                    <option value="hard_landing" data-frames="4">Hard landing (4 frames)</option>
+                    <option value="sliding_move" data-frames="4">Sliding move (4 frames)</option>
+                    <option value="dodge_roll" data-frames="6">Dodge roll (6 frames)</option>
+                    <option value="wall_jump" data-frames="5">Wall jump (5 frames)</option>
+                </optgroup>
+                <optgroup label="Combat & Bubble Gun">
+                    <option value="bubble_gun_shooting" data-frames="3">Bubble gun shooting (3 frames)</option>
+                    <option value="capture_mode" data-frames="2">Capture mode visual (2 frames)</option>
+                    <option value="destroy_mode" data-frames="2">Destroy mode visual (2 frames)</option>
+                    <option value="mode_switching" data-frames="5">Mode switching transition (5 frames)</option>
+                </optgroup>
+                <optgroup label="Enemy Animations">
+                    <option value="enemy_idle_scrubber" data-frames="4">Enemy idle - Scrubber (4 frames)</option>
+                    <option value="enemy_idle_tanker" data-frames="4">Enemy idle - Tanker (4 frames)</option>
+                    <option value="enemy_idle_zipper" data-frames="4">Enemy idle - Zipper (4 frames)</option>
+                </optgroup>
+            </select>
+            
+            <div class="prompt-template">
+                <h3>Prompt Template</h3>
+                <textarea id="promptTemplate" rows="6"></textarea>
+                <button id="copyPrompt">Copy Prompt</button>
+            </div>
+        </div>
+        
+        <div class="frame-manager">
+            <h2>Frame Manager</h2>
+            <div class="frames-needed">
+                <span id="framesNeeded">Select an animation to see required frames</span>
+            </div>
+            
+            <div class="frame-uploader">
+                <h3>Upload Frames</h3>
+                <input type="file" id="frameUpload" multiple accept="image/*">
+                <div class="upload-info">Select multiple image files for your animation frames</div>
+            </div>
+            
+            <div class="frames-container" id="framesContainer">
+                <!-- Frames will be added here -->
+            </div>
+        </div>
+        
+        <div class="animation-preview">
+            <h2>Animation Preview</h2>
+            <div class="preview-controls">
+                <label for="fpsRange">Frame Rate: <span id="fpsValue">12</span> FPS</label>
+                <input type="range" id="fpsRange" min="1" max="30" value="12">
+                <button id="playPauseBtn">▶ Play</button>
+                <button id="loopBtn" class="active">Loop: ON</button>
+            </div>
+            <div class="preview-canvas">
+                <canvas id="previewCanvas" width="500" height="500"></canvas>
+            </div>
+        </div>
+        
+        <div class="export-options">
+            <h2>Export Options</h2>
+            <button id="downloadFramesBtn">Download Frames</button>
+            <button id="generateSpriteSheetBtn">Generate Sprite Sheet</button>
+            <button id="exportGifBtn">Export as GIF</button>
+            <div class="export-note">
+                Sprite sheet and GIF options require all frames to be uploaded
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

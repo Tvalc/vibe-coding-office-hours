@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Coop - Farcade Edition</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #gameCanvas {
+            background-color: #222;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        #loadingScreen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #111;
+            color: #4fc3f7;
+            z-index: 10;
+        }
+        #loadingBar {
+            width: 300px;
+            height: 20px;
+            background-color: #333;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #loadingBarFill {
+            width: 0%;
+            height: 100%;
+            background-color: #4fc3f7;
+            transition: width 0.3s;
+        }
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.5);
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="controls">
+            Arrow keys: Move | Space: Jump/Double Jump | Z: Shoot Bubbles | X: Toggle Capture/Destroy
+        </div>
+        <div id="loadingScreen">
+            <h1>BUBBLE COOP</h1>
+            <p>Loading game assets...</p>
+            <div id="loadingBar">
+                <div id="loadingBarFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Basic Game Engine
+    const BubbleCoop = {
+        canvas: null,
+        ctx: null,
+        width: 800,
+        height: 600,
+        lastTime: 0,
+        deltaTime: 0,
+        assets: {},
+        entities: [],
+        keys: {},
+        gravity: 0.5,
+        loading: true,
+        loadingProgress: 0,
+
+        init: function() {
+            this.canvas = document.getElementById('gameCanvas');
+            this.ctx = this.canvas.getContext('2d');
+            
+            // Maintain aspect ratio but scale to fit screen
+            this.resizeCanvas();
+            window.addEventListener('resize', () => this.resizeCanvas());
+            
+            // Set up input
+            window.addEventListener('keydown', (e) => {
+                this.keys[e.key] = true;
+                
+                // Prevent scrolling with arrow keys and space
+                if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].indexOf(e.key) > -1) {
+                    e.preventDefault();
+                }
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                this.keys[e.key] = false;
+            });
+            
+            // Game initialization
+            this.loadAssets()
+                .then(() => {
+                    this.setupGame();
+                    this.loading = false;
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    document.getElementById('controls').style.display = 'block';
+                    this.run();
+                });
+        },
+
+        resizeCanvas: function() {
+            const container = document.getElementById('gameContainer');
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            
+            // Calculate the scale factor to maintain aspect ratio
+            const scaleWidth = containerWidth / this.width;
+            const scaleHeight = containerHeight / this.height;
+            const scale = Math.min(scaleWidth, scaleHeight);
+            
+            // Apply the scaling
+            this.canvas.style.width = `${this.width * scale}px`;
+            this.canvas.style.height = `${this.height * scale}px`;
+        },
+
+        loadAssets: function() {
+            return new Promise((resolve) => {
+                // For now just resolve immediately
+                // We'll add actual asset loading later
+                setTimeout(() => {
+                    this.updateLoadingProgress(100);
+                    resolve();
+                }, 1000);
+            });
+        },
+
+        updateLoadingProgress: function(value) {
+            this.loadingProgress = value;
+            document.getElementById('loadingBarFill').style.width = `${value}%`;
+        },
+
+        setupGame: function() {
+            // Create player
+            this.player = new Player(100, 300);
+            this.entities.push(this.player);
+            
+            // Add a simple platform to stand on
+            this.entities.push(new Platform(0, 500, 800, 20));
+        },
+
+        run: function(timestamp = 0) {
+            // Calculate delta time for smooth animations
+            this.deltaTime = (timestamp - this.lastTime) / 1000; // convert to seconds
+            this.lastTime = timestamp;
+            
+            // Limit delta time to avoid huge jumps if tab is inactive
+            if (this.deltaTime > 0.1) this.deltaTime = 0.1;
+            
+            this.update();
+            this.render();
+            
+            requestAnimationFrame((time) => this.run(time));
+        },
+
+        update: function() {
+            // Update all entities
+            for (let i = 0; i < this.entities.length; i++) {
+                this.entities[i].update(this.deltaTime);
+            }
+            
+            // Check collisions
+            this.checkCollisions();
+        },
+
+        checkCollisions: function() {
+            // Simple collision detection between player and platforms
+            for (let i = 0; i < this.entities.length; i++) {
+                const entity = this.entities[i];
+                
+                if (entity instanceof Platform) {
+                    if (this.player.x + this.player.width > entity.x &&
+                        this.player.x < entity.x + entity.width &&
+                        this.player.y + this.player.height > entity.y &&
+                        this.player.prevY + this.player.height <= entity.y) {
+                        
+                        // Player landing on platform
+                        this.player.y = entity.y - this.player.height;
+                        this.player.velocityY = 0;
+                        this.player.grounded = true;
+                    }
+                }
+            }
+        },
+
+        render: function() {
+            // Clear canvas
+            this.ctx.fillStyle = '#87CEEB'; // Sky blue background
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            
+            // Draw all entities
+            for (let i = 0; i < this.entities.length; i++) {
+                this.entities[i].render(this.ctx);
+            }
+        }
+    };
+
+    // Player class
+    class Player {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.width = 40;
+            this.height = 60;
+            this.velocityX = 0;
+            this.velocityY = 0;
+            this.speed = 200;
+            this.jumpForce = 400;
+            this.grounded = false;
+            this.color = '#4fc3f7';
+            this.jumpsLeft = 2; // For double jump
+            this.facingRight = true;
+            this.prevY = y;
+        }
+        
+        update(deltaTime) {
+            // Store previous position for collision detection
+            this.prevY = this.y;
+            
+            // Movement controls
+            this.velocityX = 0;
+            if (BubbleCoop.keys['ArrowLeft']) {
+                this.velocityX = -this.speed;
+                this.facingRight = false;
+            }
+            if (BubbleCoop.keys['ArrowRight']) {
+                this.velocityX = this.speed;
+                this.facingRight = true;
+            }
+            
+            // Jumping
+            if ((BubbleCoop.keys['ArrowUp'] || BubbleCoop.keys[' ']) && this.jumpsLeft > 0) {
+                if (!this.jumpKeyWasPressed) {
+                    this.velocityY = -this.jumpForce;
+                    this.jumpsLeft--;
+                    this.grounded = false;
+                    this.jumpKeyWasPressed = true;
+                }
+            } else {
+                this.jumpKeyWasPressed = false;
+            }
+            
+            // Apply gravity
+            this.velocityY += BubbleCoop.gravity * 60 * deltaTime;
+            
+            // Update position
+            this.x += this.velocityX * deltaTime;
+            this.y += this.velocityY * deltaTime;
+            
+            // Keep player in bounds
+            if (this.x < 0) this.x = 0;
+            if (this.x + this.width > BubbleCoop.width) this.x = BubbleCoop.width - this.width;
+            
+            // Reset jumps when grounded
+            if (this.grounded) {
+                this.jumpsLeft = 2;
+            }
+            
+            // Reset grounded flag each frame (will be set by collision detection)
+            this.grounded = false;
+        }
+        
+        render(ctx) {
+            // Draw player character (simple rectangle for now)
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            
+            // Draw face direction indicator
+            ctx.fillStyle = '#333';
+            if (this.facingRight) {
+                ctx.fillRect(this.x + this.width - 10, this.y + 15, 5, 10);
+            } else {
+                ctx.fillRect(this.x + 5, this.y + 15, 5, 10);
+            }
+        }
+    }
+
+    // Platform class
+    class Platform {
+        constructor(x, y, width, height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.color = '#3a5';
+        }
+        
+        update(deltaTime) {
+            // Platforms don't move or update for now
+        }
+        
+        render(ctx) {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+
+    // Initialize game when page loads
+    window.addEventListener('load', () => {
+        BubbleCoop.init();
+    });
+    </script>
+</body>
+</html>

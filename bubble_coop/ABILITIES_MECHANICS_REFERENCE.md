@@ -42,63 +42,111 @@
 | **Group Up**      | Coordinate with other Scrubbers  | When 3+ Scrubbers in proximity  | Attack timing synchronized, +20% damage   |
 
 #### Tankers
-| Ability | Description | Trigger | Effect |
-|---------|-------------|---------|--------|
-| **Heavy Strike** | Slow but powerful attack | When within 75px of player | Deals 25 damage, 3 second cooldown |
-| **Stomp** | Area of effect attack | Every 10 seconds | Creates shockwave dealing 15 damage in 100px radius |
-| **Charge** | Rush toward player | When player is between 200-400px away | Deals 20 damage on impact, 8 second cooldown |
-| **Armor** | Damage reduction | Passive | 25% damage reduction from all sources |
+| **Ability**       | **Description**               | **Trigger**                          | **Effect**                                       |
+|:------------------|:-----------------------------|:-------------------------------------|:------------------------------------------------|
+| **Heavy Strike**  | Slow but powerful attack      | When within 75px of player           | Deals 25 damage, 3 second cooldown              |
+| **Stomp**         | Area of effect attack         | Every 10 seconds                     | Creates shockwave dealing 15 damage in 100px radius |
+| **Charge**        | Rush toward player            | When player is between 200-400px away | Deals 20 damage on impact, 8 second cooldown    |
+| **Armor**         | Damage reduction              | Passive                              | 25% damage reduction from all sources            |
 
 #### Zippers
-| Ability | Description | Trigger | Effect |
-|---------|-------------|---------|--------|
-| **Quick Strike** | Fast attack sequence | When within 60px of player | 3 hits of 5 damage each, 0.2s between hits |
-| **Teleport Dodge** | Avoid incoming attacks | When bubble approaches | 80% chance to dodge bubble attacks |
-| **Flank** | Circle around to attack from behind | Every 5 seconds | Attempts to position behind player for +30% damage |
-| **Speed Burst** | Temporary speed increase | When health below 50% | 2x movement speed for 3 seconds |
+| **Ability**         | **Description**                      | **Trigger**                    | **Effect**                                       |
+|:---------------------|:-----------------------------------|:------------------------------|:------------------------------------------------|
+| **Quick Strike**     | Fast attack sequence                | When within 60px of player    | 3 hits of 5 damage each, 0.2s between hits        |
+| **Teleport Dodge**  | Avoid incoming attacks              | When bubble approaches        | 80% chance to dodge bubble attacks               |
+| **Flank**           | Circle around to attack from behind | Every 5 seconds               | Attempts to position behind player for +30% damage |
+| **Speed Burst**     | Temporary speed increase            | When health below 50%         | 2x movement speed for 3 seconds                   |
 
 #### Bosses
-| Ability | Description | Trigger | Effect |
-|---------|-------------|---------|--------|
-| **Special Attack** | Unique powerful attack | Every 15 seconds | Varies by boss, high damage and special effects |
-| **Minion Summon** | Call for reinforcements | When health below 75%, 50%, 25% | Spawns 2-3 basic enemies of matching type |
-| **Enrage** | Powered-up state | When health below 30% | +50% attack and speed, new attack patterns |
-| **Phase Shift** | Change attack patterns | At 75%, 50%, and 25% health | New attack patterns and abilities for each phase |
-| **Bubble Resistance** | Resistance to bubble capture | Passive | Requires 3 bubble hits to capture, breaks free faster |
+| **Ability**           | **Description**                   | **Trigger**                           | **Effect**                                       |
+|:----------------------|:----------------------------------|:--------------------------------------|:------------------------------------------------|
+| **Special Attack**    | Unique powerful attack            | Every 15 seconds                      | Varies by boss, high damage and special effects  |
+| **Minion Summon**     | Call for reinforcements          | When health below 75%, 50%, 25%       | Spawns 2-3 basic enemies of matching type        |
+| **Enrage**            | Powered-up state                 | When health below 30%                 | +50% attack and speed, new attack patterns       |
+| **Phase Shift**       | Change attack patterns           | At 75%, 50%, and 25% health           | New attack patterns and abilities for each phase |
+| **Bubble Resistance** | Resistance to bubble capture     | Passive                               | Requires 3 bubble hits to capture, breaks free faster |
 
 ## Follower Abilities (When Converted)
 
 ### Converted Scrubbers
-| Ability | Description | AI Behavior | Cooldown |
-|---------|-------------|-------------|----------|
-| **Quick Attack** | Rapid strikes against enemies | Targets nearest enemy, performs 3-hit combo | 2 seconds |
-| **Scavenger** | Find extra resources | 15% chance to generate extra currency when enemy is defeated | Passive |
-| **Swarm Tactics** | Coordinate with other Scrubbers | Multiple Scrubber followers attack same target with timing advantage | Passive |
-| **Elite Form** | Enhanced version after level 5 | All stats doubled, gains small bubble attack | One-time evolution |
+| **Ability**         | **Description**                  | **AI Behavior**                                             | **Cooldown**           |
+|:---------------------|:--------------------------------|:-----------------------------------------------------------|:-----------------------|
+| **Quick Attack**     | Rapid strikes against enemies     | Targets nearest enemy, performs 3-hit combo                 | 2 seconds              |
+| **Scavenger**        | Find extra resources             | 15% chance to generate extra currency when enemy is defeated | Passive                |
+| **Swarm Tactics**    | Coordinate with other Scrubbers  | Multiple Scrubber followers attack same target with timing  | Passive                |
+| **Elite Form**       | Enhanced version after level 5   | All stats doubled, gains small bubble attack                | One-time evolution     |
 
 ### Converted Tankers
-| Ability | Description | AI Behavior | Cooldown |
-|---------|-------------|-------------|----------|
-| **Damage Reduction** | Take less damage for team | 15% of damage dealt to Coop is redirected to Tanker | Passive |
-| **Taunt** | Draw enemy attention | Forces enemies within 200px to target Tanker for 5 seconds | 15 seconds |
-| **Shield Bash** | Stun enemies | Charges toward group of enemies, stunning them for 2 seconds | 10 seconds |
-| **Elite Form** | Enhanced version after level 5 | Creates protective aura reducing damage by 25% for all allies within 150px | One-time evolution |
+| **Ability**         | **Description**                  | **AI Behavior**                                             | **Cooldown**           |
+|:---------------------|:--------------------------------|:-----------------------------------------------------------|:-----------------------|
+| **Damage Reduction** | Take less damage for team        | 15% of damage dealt to Coop is redirected to Tanker         | Passive                |
+| **Taunt**            | Draw enemy attention            | Forces enemies within 200px to target Tanker for 5 seconds  | 15 seconds             |
+| **Shield Bash**      | Stun enemies                    | Charges toward enemy groups, stunning them for 2 seconds    | 10 seconds             |
+| **Elite Form**       | Enhanced version after level 5   | Creates protective aura (-25% damage) for allies in 150px   | One-time evolution     |
 
 ### Converted Zippers
-| Ability | Description | AI Behavior | Cooldown |
-|---------|-------------|-------------|----------|
-| **Scout** | Reveal hidden items | Automatically moves toward and reveals hidden pickups | Passive |
-| **Distraction** | Confuse enemies | Dashes around target enemy, reducing its accuracy by 50% | 8 seconds |
-| **Blitz Attack** | Line attack through enemies | Charges through multiple enemies dealing damage to all in path | 12 seconds |
-| **Elite Form** | Enhanced version after level 5 | Gains teleportation ability to instantly appear next to threatened allies | One-time evolution |
+| **Ability**         | **Description**                  | **AI Behavior**                                             | **Cooldown**           |
+|:---------------------|:--------------------------------|:-----------------------------------------------------------|:-----------------------|
+| **Scout**            | Reveal hidden items              | Automatically moves toward and reveals hidden pickups        | Passive                |
+| **Distraction**      | Confuse enemies                  | Dashes around target enemy, reducing its accuracy by 50%     | 8 seconds              |
+| **Blitz Attack**     | Line attack through enemies      | Charges through multiple enemies dealing damage to all      | 12 seconds             |
+| **Elite Form**       | Enhanced version after level 5   | Gains teleportation to appear next to threatened allies     | One-time evolution     |
 
 ### Converted Bosses
-| Ability | Description | AI Behavior | Cooldown |
-|---------|-------------|-------------|----------|
-| **Signature Move** | Use former boss attack | Uses scaled-down version of main boss attack | 20 seconds |
-| **Command Aura** | Boost other followers | +20% attack and speed for all other followers within 200px | Passive |
-| **Ultimate Ability** | Screen-wide attack | Powerful attack affecting all enemies on screen, varies by boss type | 45 seconds |
-| **Ultimate Form** | Enhanced version after level 5 | Unique transformation with new abilities and appearance | One-time evolution |
+| **Ability**         | **Description**                  | **AI Behavior**                                             | **Cooldown**           |
+|:---------------------|:--------------------------------|:-----------------------------------------------------------|:-----------------------|
+| **Signature Move**   | Use former boss attack           | Uses scaled-down version of main boss attack                | 20 seconds             |
+| **Command Aura**     | Boost other followers            | +20% attack and speed for all followers within 200px        | Passive                |
+| **Ultimate Ability** | Screen-wide attack              | Powerful attack affecting all enemies, varies by boss type  | 45 seconds             |
+| **Ultimate Form**    | Enhanced version after level 5   | Unique transformation with new abilities and appearance     | One-time evolution     |
+
+## Capture/Destroy Mode System
+
+### Mode Toggle Mechanics
+| **Feature**           | **Description**                                   | **Controls**                               | **Visual Indicator**                               |
+|:----------------------|:------------------------------------------------|:------------------------------------------|:---------------------------------------------------|
+| **Capture Mode**      | Enemies trapped in bubbles are stored in inventory | PC: Press Tab/Q to toggle                  | Blue bubble gun glow, "Capture" icon highlighted   |
+|                      |                                                 | Mobile: Tap Mode button                   |                                                   |
+| **Destroy Mode**      | Enemies trapped in bubbles are destroyed for XP    | PC: Press Tab/Q to toggle                  | Red bubble gun glow, "Destroy" icon highlighted    |
+|                      |                                                 | Mobile: Tap Mode button                   |                                                   |
+| **Auto-Switch**       | Automatically switches to Destroy when inventory is full | Triggered automatically                    | Brief screen flash, mode icon changes with notification |
+| **Mode Restrictions** | Cannot switch to Capture mode when inventory is full | Toggle button disabled when at capacity    | Toggle button grayed out with "Full" indicator     |
+
+### Enemy Inventory System
+| **Feature**           | **Description**                                   | **Controls**                               | **Visual Indicator**                               |
+|:----------------------|:------------------------------------------------|:------------------------------------------|:---------------------------------------------------|
+| **Inventory Capacity**| Starts at 1 slot, increases with level progression | N/A                                       | UI shows X/Y format (used/total slots)            |
+| **Enemy Management**  | View and manage captured enemies                  | PC: Press I to open inventory              | Grid display of captured enemies with stats       |
+|                      |                                                 | Mobile: Tap Inventory button              |                                                   |
+| **Discard Enemies**   | Remove unwanted captured enemies                  | PC: Select enemy + Delete key              | Animation shows enemy being released/destroyed    |
+|                      |                                                 | Mobile: Tap and hold enemy                |                                                   |
+| **Convert to Follower**| Transform captured enemy into follower           | PC: Select enemy + Enter key               | Transformation animation with stat display        |
+|                      |                                                 | Mobile: Tap "Convert" button              |                                                   |
+| **Sort Inventory**    | Organize enemies by type, level, or rarity        | PC/Mobile: Tap sort button in inventory    | Sorted view with highlight animation              |
+
+### Implementation Details
+
+1. **Player State Management:**
+   - Track current mode (Capture/Destroy) in player state
+   - Monitor inventory capacity and used slots
+   - Handle forced mode switching when inventory is full
+
+2. **UI Requirements:**
+   - Clear mode indicator in HUD (different colored bubbles for each mode)
+   - Inventory counter showing used/total slots
+   - Notification system for auto mode switching
+   - Full inventory screen with enemy preview and stats
+
+3. **Input Handling:**
+   - Dedicated mode toggle button with appropriate feedback
+   - Context-sensitive controls in inventory screen
+   - Haptic feedback for mobile when toggling modes
+
+4. **Animation/VFX:**
+   - Distinctive visual effects for capture vs. destroy modes
+   - Animation for auto-switching modes
+   - "Inventory Full" warning effect
+   - Discard and conversion animations
 
 ## Implementation Guidelines
 

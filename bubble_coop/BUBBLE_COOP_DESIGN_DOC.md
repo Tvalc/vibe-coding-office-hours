@@ -1,7 +1,11 @@
 # BUBBLE COOP - DESIGN DOCUMENT
 
 ## Game Concept
-"Bubble Coop" is a side-scrolling beat 'em up game where the main character, Coop, uses a bubble gun to capture enemies. Players can then choose to either convert captured enemies into followers or destroy them to collect XP and currency. These resources are used to level up Coop and any followers acquired through bubble conversion.
+"Bubble Coop" is a side-scrolling beat 'em up game where the main character, Coop, uses a bubble gun to capture enemies. Players can toggle between "capture mode" and "destroy mode" to either collect enemies or immediately destroy them for resources. 
+
+In capture mode, enemies are stored in the player's inventory (initially limited to 1 slot, expandable up to 50 with upgrades). When the inventory reaches maximum capacity, the game automatically switches to destroy mode until space is freed up. Players can manually discard captured enemies from their inventory to make room for new captures.
+
+Captured enemies can either be converted into followers or destroyed to collect XP and currency. These resources are used to level up Coop, expand inventory capacity, and enhance any followers acquired through bubble conversion.
 
 ## Core Mechanics
 
@@ -43,20 +47,23 @@
 ### Progression System
 - **XP:** Used to level up Coop and followers
 - **Currency:** Used to upgrade bubble gun, abilities, and follower capacity
-- Leveling up unlocks new abilities and increases stats
+- **Enemy Inventory:** Initially limited to 1 captured enemy, expands with level progression up to 50 slots
+- **Capture/Destroy Mode:** Toggle between capturing enemies (storing in inventory) or destroying them for immediate resources
+- Leveling up unlocks new abilities, increases stats, and expands inventory capacity
 
 #### Coop's Leveling Benefits
-| Level | Stat Improvements | New Abilities | Bubble Gun Upgrades |
-|-------|-------------------|--------------|--------------------|
-| 2     | +10% Health       | Double Jump  | Faster bubble firing rate |
-| 3     | +15% Speed        | Slide Move   | Larger bubbles (can capture bigger enemies) |
-| 4     | +10% Health       | Dodge Roll   | Multi-bubble shot (2 bubbles at once) |
-| 5     | +20% Attack Power | Ground Pound | Explosive bubbles (area damage on pop) |
-| 6     | +15% Health       | Wall Jump    | Homing bubbles (slight tracking capability) |
-| 7     | +20% Speed        | Air Dash     | Bubble shield (temporary defensive barrier) |
-| 8     | +15% Attack Power | Counter Move | Elemental bubbles (fire, ice, electric effects) |
-| 9     | +20% Health       | Combo Finisher | Chain bubbles (connect multiple enemies) |
-| 10    | +25% All Stats    | Super Mode   | Mega bubble (captures multiple enemies at once) |
+| **Level** | **Stat Improvements** | **New Abilities**  | **Bubble Gun Upgrades**                       | **Inventory Expansion** |
+|:-------:|:---------------------|:-----------------|:---------------------------------------------|:-----------------------|
+| 1       | Base Stats           | Basic Jump/Attack  | Standard bubbles                             | 1 enemy slot            |
+| 2       | +10% Health          | Double Jump       | Faster bubble firing rate                    | +4 slots (5 total)      |
+| 3       | +15% Speed           | Slide Move        | Larger bubbles (can capture bigger enemies)  | +5 slots (10 total)     |
+| 4       | +10% Health          | Dodge Roll        | Multi-bubble shot (2 bubbles at once)        | +5 slots (15 total)     |
+| 5       | +20% Attack Power    | Ground Pound      | Explosive bubbles (area damage on pop)       | +5 slots (20 total)     |
+| 6       | +15% Health          | Wall Jump         | Homing bubbles (slight tracking capability)  | +5 slots (25 total)     |
+| 7       | +20% Speed           | Air Dash          | Bubble shield (temporary defensive barrier)  | +5 slots (30 total)     |
+| 8       | +15% Attack Power    | Counter Move      | Elemental bubbles (fire, ice, electric)      | +5 slots (35 total)     |
+| 9       | +20% Health          | Combo Finisher    | Chain bubbles (connect multiple enemies)     | +5 slots (40 total)     |
+| 10      | +25% All Stats       | Super Mode        | Mega bubble (captures multiple enemies)      | +10 slots (50 total)    |
 
 #### Follower Leveling Benefits
 
@@ -69,36 +76,36 @@ All followers gain these general improvements when leveling up:
 Additionally, each follower type gains unique benefits:
 
 **Scrubbers:**
-| Level | Unique Benefits |
-|-------|----------------|
-| 2     | Quick Attack: Can perform rapid strikes |
-| 3     | Scavenger: Occasionally finds extra currency |
-| 4     | Swarm Tactics: Coordinates attacks with other Scrubbers |
-| 5     | Evolution: Transforms into an Elite Scrubber with doubled stats |
+| **Level** | **Unique Benefits** |
+|:-------:|:------------------------------------------------|
+| 2       | Quick Attack: Can perform rapid strikes           |
+| 3       | Scavenger: Occasionally finds extra currency      |
+| 4       | Swarm Tactics: Coordinates attacks with other Scrubbers |
+| 5       | Evolution: Transforms into an Elite Scrubber with doubled stats |
 
 **Tankers:**
-| Level | Unique Benefits |
-|-------|----------------|
-| 2     | Damage Reduction: Takes 15% less damage |
-| 3     | Taunt: Can draw enemy attention away from Coop |
-| 4     | Shield Bash: Stuns enemies briefly |
-| 5     | Evolution: Transforms into an Elite Tanker with area-of-effect protection |
+| **Level** | **Unique Benefits** |
+|:-------:|:------------------------------------------------|
+| 2       | Damage Reduction: Takes 15% less damage          |
+| 3       | Taunt: Can draw enemy attention away from Coop   |
+| 4       | Shield Bash: Stuns enemies briefly              |
+| 5       | Evolution: Transforms into an Elite Tanker with area-of-effect protection |
 
 **Zippers:**
-| Level | Unique Benefits |
-|-------|----------------|
-| 2     | Scout: Reveals hidden items on the level |
-| 3     | Distraction: Confuses enemies temporarily |
-| 4     | Blitz Attack: Performs charging attacks through multiple enemies |
-| 5     | Evolution: Transforms into an Elite Zipper with teleportation abilities |
+| **Level** | **Unique Benefits** |
+|:-------:|:------------------------------------------------|
+| 2       | Scout: Reveals hidden items on the level         |
+| 3       | Distraction: Confuses enemies temporarily       |
+| 4       | Blitz Attack: Performs charging attacks through multiple enemies |
+| 5       | Evolution: Transforms into an Elite Zipper with teleportation abilities |
 
 **Boss Converts:**
-| Level | Unique Benefits |
-|-------|----------------|
-| 2     | Signature Move: Can use their boss special attack (limited) |
-| 3     | Command Aura: Boosts other followers' effectiveness |
-| 4     | Ultimate Ability: Powerful screen-wide attack (long cooldown) |
-| 5     | Evolution: Transforms into their Ultimate Form with a new appearance and abilities |
+| **Level** | **Unique Benefits** |
+|:-------:|:------------------------------------------------|
+| 2       | Signature Move: Can use their boss special attack (limited) |
+| 3       | Command Aura: Boosts other followers' effectiveness |
+| 4       | Ultimate Ability: Powerful screen-wide attack (long cooldown) |
+| 5       | Evolution: Transforms into their Ultimate Form with a new appearance and abilities |
 
 ## Characters
 
