@@ -76,6 +76,9 @@
             <div id="loadingBar">
                 <div id="loadingBarFill"></div>
             </div>
+            <div id="controls" style="display: none;">
+                <p>Controls: Arrow keys/WASD to move, Space to jump, F to shoot bubbles</p>
+            </div>
         </div>
     </div>
 
@@ -90,10 +93,14 @@
         deltaTime: 0,
         assets: {},
         entities: [],
+        bubbles: [],
         keys: {},
-        gravity: 3.0,
+        lastKeyState: {},
+        gravity: 11.25,
         loading: true,
         loadingProgress: 0,
+        shootCooldown: 0.5, // Half second between shots
+        shootTimer: 0,
 
         init: function() {
             this.canvas = document.getElementById('gameCanvas');
@@ -103,12 +110,12 @@
             this.resizeCanvas();
             window.addEventListener('resize', () => this.resizeCanvas());
             
-            // Set up input
+            // Set up input handlers
             window.addEventListener('keydown', (e) => {
                 this.keys[e.key] = true;
                 
-                // Prevent scrolling with arrow keys and space
-                if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].indexOf(e.key) > -1) {
+                // Prevent scrolling with arrow keys, WASD, space, and F (for bubbles)
+                if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D', ' ', 'f', 'F', 'Shift'].indexOf(e.key) > -1) {
                     e.preventDefault();
                 }
             });
@@ -145,12 +152,9 @@
 
         loadAssets: function() {
             return new Promise((resolve) => {
-                // For now just resolve immediately
-                // We'll add actual asset loading later
-                setTimeout(() => {
-                    this.updateLoadingProgress(100);
-                    resolve();
-                }, 1000);
+                // Immediately resolve to skip past loading screen
+                this.updateLoadingProgress(100);
+                resolve();
             });
         },
 
@@ -168,16 +172,20 @@
             // Main floor
             this.entities.push(new Platform(0, 550, 800, 20));
             
-            // Platforms at different heights
-            this.entities.push(new Platform(100, 450, 200, 15));
-            this.entities.push(new Platform(400, 400, 200, 15));
-            this.entities.push(new Platform(200, 320, 150, 15));
-            this.entities.push(new Platform(500, 250, 150, 15));
-            this.entities.push(new Platform(50, 200, 150, 15));
+            // Platforms at different heights - carefully spaced for single jumps
+            this.entities.push(new Platform(100, 470, 200, 15)); // Low platform
+            this.entities.push(new Platform(400, 410, 200, 15)); // Medium-low platform
             
-            // Small challenge platforms
-            this.entities.push(new Platform(350, 180, 60, 10));
-            this.entities.push(new Platform(650, 150, 60, 10));
+            // Middle tier platforms
+            this.entities.push(new Platform(200, 350, 150, 15));
+            this.entities.push(new Platform(500, 320, 150, 15));
+            
+            // Higher platforms - these should be reachable with the new jump force
+            this.entities.push(new Platform(50, 280, 150, 15));
+            this.entities.push(new Platform(350, 260, 60, 10));
+            
+            // Highest platform - challenge platform that requires a well-timed jump
+            this.entities.push(new Platform(650, 240, 60, 10));
         },
 
         run: function(timestamp = 0) {
@@ -200,57 +208,88 @@
                 this.entities[i].update(this.deltaTime);
             }
             
+            // Update all active bubbles
+            for (let i = this.bubbles.length - 1; i >= 0; i--) {
+                if (this.bubbles[i].active) {
+                    this.bubbles[i].update(this.deltaTime);
+                } else {
+                    // Remove inactive bubbles
+                    this.bubbles.splice(i, 1);
+                }
+            }
+            
             // Check collisions
             this.checkCollisions();
+            
+            // Handle shooting (F key or Shift)
+            const shootPressed = this.keys['f'] || this.keys['F'] || this.keys['Shift'];
+            
+            // Update shoot cooldown timer
+            if (this.shootTimer > 0) {
+                this.shootTimer -= this.deltaTime;
+            }
+            
+            // Shoot a bubble when F is pressed and cooldown is complete
+            if (shootPressed && this.shootTimer <= 0) {
+                this.shootBubble();
+                this.shootTimer = this.shootCooldown;
+            }
+        },
+        
+        shootBubble: function() {
+            // Create a new bubble at the player's position
+            const bubbleX = this.player.facingRight ? 
+                this.player.x + this.player.width : 
+                this.player.x;
+            const bubbleY = this.player.y + this.player.height / 2;
+            
+            // Create bubble and add to array
+            const bubble = new Bubble(bubbleX, bubbleY, this.player.facingRight);
+            this.bubbles.push(bubble);
         },
 
         checkCollisions: function() {
-            // Improved collision detection between player and platforms
+            // Simplified collision detection between player and platforms
+            this.player.grounded = false; // Reset grounded state
+            
             for (let i = 0; i < this.entities.length; i++) {
                 const entity = this.entities[i];
                 
                 if (entity instanceof Platform) {
-                    // Check horizontal overlap first
-                    const horizontalOverlap = 
-                        this.player.x + this.player.width > entity.x && 
-                        this.player.x < entity.x + entity.width;
-                        
-                    if (horizontalOverlap) {
-                        // TOP collision - player landing on platform
-                        if (this.player.y + this.player.height > entity.y && 
-                            this.player.prevY + this.player.height <= entity.y + 5) { // Add small tolerance
-                            
-                            this.player.y = entity.y - this.player.height;
-                            this.player.velocityY = 0;
-                            this.player.grounded = true;
-                            continue;
-                        }
-                        
-                        // BOTTOM collision - player hitting platform from below
-                        if (this.player.y < entity.y + entity.height && 
-                            this.player.prevY >= entity.y + entity.height - 5) { // Add small tolerance
-                            
-                            this.player.y = entity.y + entity.height;
-                            this.player.velocityY = 0;
-                            continue;
-                        }
-                        
-                        // Side collisions only if not landing on top or hitting from below
-                        if (!this.player.grounded) {
-                            // RIGHT side collision
-                            if (this.player.prevX + this.player.width <= entity.x + 5 &&
-                                this.player.x + this.player.width > entity.x) {
-                                
+                    // Get overlap areas
+                    const overlapX = Math.min(
+                        this.player.x + this.player.width - entity.x, 
+                        entity.x + entity.width - this.player.x
+                    );
+                    
+                    const overlapY = Math.min(
+                        this.player.y + this.player.height - entity.y, 
+                        entity.y + entity.height - this.player.y
+                    );
+                    
+                    // Check if there's a collision
+                    if (overlapX > 0 && overlapY > 0) {
+                        // Determine which side has the smallest overlap (that's our collision side)
+                        if (overlapX < overlapY) {
+                            // X-axis collision (left or right)
+                            if (this.player.x < entity.x) {
+                                // Right side of player hit left side of platform
                                 this.player.x = entity.x - this.player.width;
-                                this.player.velocityX = 0;
-                            }
-                            
-                            // LEFT side collision
-                            if (this.player.prevX >= entity.x + entity.width - 5 &&
-                                this.player.x < entity.x + entity.width) {
-                                
+                            } else {
+                                // Left side of player hit right side of platform
                                 this.player.x = entity.x + entity.width;
-                                this.player.velocityX = 0;
+                            }
+                        } else {
+                            // Y-axis collision (top or bottom)
+                            if (this.player.y < entity.y) {
+                                // Bottom of player hit top of platform
+                                this.player.y = entity.y - this.player.height;
+                                this.player.velocityY = 0;
+                                this.player.grounded = true;
+                            } else {
+                                // Top of player hit bottom of platform
+                                this.player.y = entity.y + entity.height;
+                                this.player.velocityY = 0;
                             }
                         }
                     }
@@ -267,7 +306,19 @@
             for (let i = 0; i < this.entities.length; i++) {
                 this.entities[i].render(this.ctx);
             }
-        }
+            
+            // Draw all bubbles
+            for (let i = 0; i < this.bubbles.length; i++) {
+                this.bubbles[i].render(this.ctx);
+            }
+            
+            // Draw debug info
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '14px Arial';
+            this.ctx.fillText(`FPS: ${Math.round(1 / this.deltaTime)}`, 10, 20);
+            this.ctx.fillText(`Bubbles: ${this.bubbles.length}`, 10, 40);
+        },
+        
     };
 
     // Player class
@@ -275,18 +326,17 @@
         constructor(x, y) {
             this.x = x;
             this.y = y;
-            this.width = 40;
-            this.height = 60;
+            this.width = 30;
+            this.height = 50;
+            this.color = '#4fc3f7';
             this.velocityX = 0;
             this.velocityY = 0;
-            this.speed = 200;
-            this.jumpForce = 160;
+            this.speed = 300;
+            this.jumpForce = 280; // Further reduced for better jump height
             this.grounded = false;
-            this.color = '#4fc3f7';
-            this.jumpsLeft = 2; // For double jump
             this.facingRight = true;
-            this.prevX = x;
-            this.prevY = y;
+            this.jumpKeyWasPressed = false;
+            this.jumpsLeft = 2; // Allow double jump
         }
         
         update(deltaTime) {
@@ -296,32 +346,47 @@
             
             // Movement controls
             this.velocityX = 0;
-            if (BubbleCoop.keys['ArrowLeft']) {
+            // Left movement (Left Arrow or A)
+            if (BubbleCoop.keys['ArrowLeft'] || BubbleCoop.keys['a'] || BubbleCoop.keys['A']) {
                 this.velocityX = -this.speed;
                 this.facingRight = false;
             }
-            if (BubbleCoop.keys['ArrowRight']) {
+            // Right movement (Right Arrow or D)
+            if (BubbleCoop.keys['ArrowRight'] || BubbleCoop.keys['d'] || BubbleCoop.keys['D']) {
                 this.velocityX = this.speed;
                 this.facingRight = true;
             }
             
-            // Jumping
-            if ((BubbleCoop.keys['ArrowUp'] || BubbleCoop.keys[' ']) && this.jumpsLeft > 0) {
-                if (!this.jumpKeyWasPressed) {
+            // Jump control with Space, W, or ArrowUp
+            const jumpPressed = BubbleCoop.keys[' '] || BubbleCoop.keys['w'] || BubbleCoop.keys['W'] || BubbleCoop.keys['ArrowUp'];
+            
+            if (jumpPressed) {
+                // Only allow jump if we haven't already jumped this keypress
+                if (!this.jumpKeyWasPressed && this.grounded) {
+                    this.velocityY = -this.jumpForce;
+                    this.grounded = false;
+                    this.jumpKeyWasPressed = true;
+                } else if (!this.jumpKeyWasPressed && this.jumpsLeft > 0 && !this.grounded) {
+                    // Double jump in mid-air
                     this.velocityY = -this.jumpForce;
                     this.jumpsLeft--;
-                    this.grounded = false;
                     this.jumpKeyWasPressed = true;
                 }
             } else {
+                // Reset jump key state when the jump key is released
                 this.jumpKeyWasPressed = false;
+            }
+            
+            // Reset jumps when grounded
+            if (this.grounded) {
+                this.jumpsLeft = 2;
             }
             
             // Apply gravity with a max fall speed
             this.velocityY += BubbleCoop.gravity * 60 * deltaTime;
             // Limit maximum fall speed
-            if (this.velocityY > 300) {
-                this.velocityY = 300;
+            if (this.velocityY > 700) {
+                this.velocityY = 700;
             }
             
             // Update position
@@ -345,9 +410,6 @@
             if (this.grounded) {
                 this.jumpsLeft = 2;
             }
-            
-            // Reset grounded flag each frame (will be set by collision detection)
-            this.grounded = false;
         }
         
         render(ctx) {
@@ -384,11 +446,66 @@
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
     }
+    
+    // Bubble class for bubble shooting mechanics
+    class Bubble {
+        constructor(x, y, directionRight) {
+            this.x = x;
+            this.y = y;
+            this.radius = 15;
+            this.speed = 400; // Bubbles move faster than player
+            this.directionRight = directionRight;
+            this.active = true;
+            this.color = '#8cfffb';
+            this.alpha = 0.6; // Semi-transparent bubbles
+            this.lifeTime = 3; // Bubbles disappear after 3 seconds
+            this.lifeTimer = 0;
+            this.capturedEntity = null;
+        }
+        
+        update(deltaTime) {
+            // Update bubble position based on direction
+            if (this.directionRight) {
+                this.x += this.speed * deltaTime;
+            } else {
+                this.x -= this.speed * deltaTime;
+            }
+            
+            // Update life timer
+            this.lifeTimer += deltaTime;
+            if (this.lifeTimer >= this.lifeTime) {
+                this.active = false;
+            }
+            
+            // Boundaries check
+            if (this.x < -this.radius * 2 || this.x > BubbleCoop.width + this.radius * 2) {
+                this.active = false;
+            }
+        }
+        
+        render(ctx) {
+            ctx.globalAlpha = this.alpha;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
+            
+            // Draw shine effect on bubble
+            ctx.beginPath();
+            ctx.arc(this.x - this.radius * 0.3, this.y - this.radius * 0.3, this.radius * 0.2, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+        }
+    }
 
     // Initialize game when page loads
     window.addEventListener('load', () => {
         BubbleCoop.init();
     });
-    </script>
+</script>
 </body>
 </html>
