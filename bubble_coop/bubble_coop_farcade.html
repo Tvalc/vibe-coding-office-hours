@@ -4,6 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bubble Coop - Farcade Edition</title>
+    <!-- Debug panel for key states -->
+    <script>
+    // Debug function to display key states
+    function updateDebug() {
+        if (window.BubbleCoop) {
+            const debug = document.getElementById('debug-panel');
+            if (debug) {
+                debug.innerHTML = `moveLeft: ${BubbleCoop.moveLeft}<br>
+                              moveRight: ${BubbleCoop.moveRight}<br>
+                              jump: ${BubbleCoop.jump}<br>
+                              shoot: ${BubbleCoop.shoot}<br>
+                              playerDir: ${BubbleCoop.player ? BubbleCoop.player.facingRight ? 'right' : 'left' : 'none'}`;
+            }
+        }
+        requestAnimationFrame(updateDebug);
+    }
+    window.addEventListener('load', () => {
+        requestAnimationFrame(updateDebug);
+    });
+    </script>
     <style>
         body {
             margin: 0;
@@ -62,6 +82,18 @@
             border-radius: 5px;
             display: none;
         }
+        #debug-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
@@ -80,6 +112,7 @@
                 <p>Controls: Arrow keys/WASD to move, Space to jump, F to shoot bubbles</p>
             </div>
         </div>
+        <div id="debug-panel">Debug loading...</div>
     </div>
 
     <script>
@@ -95,7 +128,11 @@
         entities: [],
         bubbles: [],
         keys: {},
-        lastKeyState: {},
+        keyStates: {}, // Track individual key states separately
+        moveLeft: false,
+        moveRight: false,
+        jump: false,
+        shoot: false,
         gravity: 11.25,
         loading: true,
         loadingProgress: 0,
@@ -110,19 +147,8 @@
             this.resizeCanvas();
             window.addEventListener('resize', () => this.resizeCanvas());
             
-            // Set up input handlers
-            window.addEventListener('keydown', (e) => {
-                this.keys[e.key] = true;
-                
-                // Prevent scrolling with arrow keys, WASD, space, and F (for bubbles)
-                if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D', ' ', 'f', 'F', 'Shift'].indexOf(e.key) > -1) {
-                    e.preventDefault();
-                }
-            });
-            
-            window.addEventListener('keyup', (e) => {
-                this.keys[e.key] = false;
-            });
+            // The key handlers are now set up outside the init method
+            // to prevent any interference between shooting and movement
             
             // Game initialization
             this.loadAssets()
@@ -221,16 +247,13 @@
             // Check collisions
             this.checkCollisions();
             
-            // Handle shooting (F key or Shift)
-            const shootPressed = this.keys['f'] || this.keys['F'] || this.keys['Shift'];
-            
             // Update shoot cooldown timer
             if (this.shootTimer > 0) {
                 this.shootTimer -= this.deltaTime;
             }
             
-            // Shoot a bubble when F is pressed and cooldown is complete
-            if (shootPressed && this.shootTimer <= 0) {
+            // Shoot a bubble using the shoot flag instead of directly checking keys
+            if (this.shoot && this.shootTimer <= 0) {
                 this.shootBubble();
                 this.shootTimer = this.shootCooldown;
             }
@@ -243,7 +266,8 @@
                 this.player.x;
             const bubbleY = this.player.y + this.player.height / 2;
             
-            // Create bubble and add to array
+            // Create bubble and add to array - IMPORTANT: Use the player's direction
+            // but don't modify it here to prevent movement locking
             const bubble = new Bubble(bubbleX, bubbleY, this.player.facingRight);
             this.bubbles.push(bubble);
         },
@@ -344,23 +368,38 @@
             this.prevX = this.x;
             this.prevY = this.y;
             
-            // Movement controls
+            // Movement controls using the game's control flags
             this.velocityX = 0;
-            // Left movement (Left Arrow or A)
-            if (BubbleCoop.keys['ArrowLeft'] || BubbleCoop.keys['a'] || BubbleCoop.keys['A']) {
+            
+            // Get previous direction to preserve if both keys are pressed
+            const prevFacingRight = this.facingRight;
+            
+            // Process movement
+            let movingThisFrame = false;
+            
+            // Left movement
+            if (BubbleCoop.moveLeft) {
                 this.velocityX = -this.speed;
                 this.facingRight = false;
+                movingThisFrame = true;
             }
-            // Right movement (Right Arrow or D)
-            if (BubbleCoop.keys['ArrowRight'] || BubbleCoop.keys['d'] || BubbleCoop.keys['D']) {
+            
+            // Right movement
+            if (BubbleCoop.moveRight) {
                 this.velocityX = this.speed;
                 this.facingRight = true;
+                movingThisFrame = true;
             }
             
-            // Jump control with Space, W, or ArrowUp
-            const jumpPressed = BubbleCoop.keys[' '] || BubbleCoop.keys['w'] || BubbleCoop.keys['W'] || BubbleCoop.keys['ArrowUp'];
+            // If both keys are pressed, restore previous facing direction
+            if (BubbleCoop.moveLeft && BubbleCoop.moveRight) {
+                this.facingRight = prevFacingRight;
+                this.velocityX = 0; // Cancel out movement
+            }
             
-            if (jumpPressed) {
+            // Use the jump flag directly instead of checking keys
+            
+            if (BubbleCoop.jump) {
                 // Only allow jump if we haven't already jumped this keypress
                 if (!this.jumpKeyWasPressed && this.grounded) {
                     this.velocityY = -this.jumpForce;
@@ -502,8 +541,61 @@
         }
     }
 
+    // Simplified key handler functions to prevent movement direction locking
+    function handleKeyDown(e) {
+        const key = e.key.toLowerCase();
+        
+        // Prevent default browser behavior for game controls
+        if(['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd', ' ', 'f', 'shift'].indexOf(key) > -1) {
+            e.preventDefault();
+        }
+        
+        // Handle movement keys - NO DIRECTION CHANGING HERE
+        // Let the Player update method handle direction based on velocity
+        if (key === 'arrowleft' || key === 'a') {
+            BubbleCoop.moveLeft = true;
+        } 
+        
+        if (key === 'arrowright' || key === 'd') {
+            BubbleCoop.moveRight = true;
+        }
+        
+        // Handle action keys
+        if (key === 'arrowup' || key === 'w' || key === ' ') {
+            BubbleCoop.jump = true;
+        }
+        
+        if (key === 'f' || key === 'shift') {
+            BubbleCoop.shoot = true;
+        }
+    }
+    
+    function handleKeyUp(e) {
+        const key = e.key.toLowerCase();
+        
+        // Handle movement keys
+        if (key === 'arrowleft' || key === 'a') {
+            BubbleCoop.moveLeft = false;
+        } else if (key === 'arrowright' || key === 'd') {
+            BubbleCoop.moveRight = false;
+        }
+        
+        // Handle action keys
+        if (key === 'arrowup' || key === 'w' || key === ' ') {
+            BubbleCoop.jump = false;
+        }
+        if (key === 'f' || key === 'shift') {
+            BubbleCoop.shoot = false;
+        }
+    }
+    
     // Initialize game when page loads
     window.addEventListener('load', () => {
+        // Add the key handlers to the window
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+        
+        // Initialize the game
         BubbleCoop.init();
     });
 </script>
